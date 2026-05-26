@@ -4,7 +4,6 @@ import { runMcpServer } from "./mcp.js";
 
 interface CliOptions {
   mcp: boolean;
-  once: boolean;
   timeoutMs?: number;
   includeEmail: boolean;
   help: boolean;
@@ -31,7 +30,6 @@ Options:
 function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     mcp: false,
-    once: false,
     includeEmail: false,
     help: false,
   };
@@ -42,9 +40,6 @@ function parseArgs(argv: string[]): CliOptions {
     switch (arg) {
       case "--mcp":
         options.mcp = true;
-        break;
-      case "--once":
-        options.once = true;
         break;
       case "--include-email":
         options.includeEmail = true;
