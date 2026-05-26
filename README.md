@@ -6,15 +6,12 @@ Check your current Codex usage and rate-limit status from Claude Code, Codex, or
 current Codex rate-limit windows, but that status is not exposed as a simple MCP tool for another
 agent to query during a session.
 
+```sh
+codex mcp add codex-status-mcp -- npx -y codex-status-mcp --mcp
+```
+
 This package fills that gap. It starts Codex's local app-server, asks it for the current account and
 rate-limit status, and returns the status JSON directly.
-
-Use it as:
-
-- a CLI smoke test: `npx codex-status-mcp`
-- a Claude Code MCP server
-- a Codex MCP server
-- a local MCP server while developing or testing
 
 ## Demo
 
@@ -275,6 +272,27 @@ and refresh behavior internally. This package does not read or print your Codex 
 By default, the command prints the result to stdout and exits. With `--mcp`, the process stays alive
 because the MCP client manages it over stdio.
 
+### Evidence
+
+The implementation is based on these official/source references:
+
+- OpenAI's Codex app-server README documents that `codex app-server` supports JSON-RPC over stdio
+  with `--listen stdio://`, and that clients must call `initialize` before using the API:
+  <https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md#protocol>
+- The same README documents the account endpoints used here:
+  `account/read` fetches current account info, and `account/rateLimits/read` fetches ChatGPT rate
+  limits:
+  <https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md#auth-endpoints>
+- The rate-limit section documents the returned fields this package normalizes: `usedPercent`,
+  `windowDurationMins`, `resetsAt`, and `rateLimitReachedType`:
+  <https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md#7-rate-limits-chatgpt>
+- OpenAI's Help Center says Codex usage limits vary by ChatGPT plan, count toward agentic usage,
+  and can be checked through the Codex usage page or limit banner:
+  <https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan>
+- The Codex pricing page says current limits are available in the Codex usage dashboard and that
+  local messages and cloud tasks share a five-hour usage window:
+  <https://chatgpt.com/codex/pricing/>
+
 ## Local Checkout Setup
 
 Use these commands when working from a cloned copy of this repository before publishing to npm.
@@ -416,3 +434,7 @@ This package asks Codex's app-server for account status. Codex handles your Chat
 ## License
 
 MIT
+
+---
+
+Made with ❤️ by Dmytro Vakulenko, 2026
