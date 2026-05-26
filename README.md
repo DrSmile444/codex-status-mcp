@@ -1,0 +1,418 @@
+# codex-status-mcp
+
+Check your current Codex usage and rate-limit status from Claude Code, Codex, or any MCP client.
+
+`codex-status-mcp` solves a small visibility problem: Codex already knows your ChatGPT account and
+current Codex rate-limit windows, but that status is not exposed as a simple MCP tool for another
+agent to query during a session.
+
+This package fills that gap. It starts Codex's local app-server, asks it for the current account and
+rate-limit status, and returns the status JSON directly.
+
+Use it as:
+
+- a CLI smoke test: `npx codex-status-mcp --once`
+- a Claude Code MCP server
+- a Codex MCP server
+- a local MCP server while developing or testing
+
+## Demo
+
+<img src="docs/codex-usage-demo.png" alt="Codex usage shown as a table in an MCP client" width="540">
+
+## Features
+
+- Uses Codex's own app-server account API instead of local session telemetry.
+- Respects usage from the ChatGPT account Codex is logged into, not just one local device.
+- Exposes a single MCP tool: `get_codex_status`.
+- Returns primary and secondary Codex rate-limit windows with usage percentage and reset time.
+- Returns Codex credits status and whether a rate limit has been reached.
+- Redacts the account email by default.
+- Does not read, store, log, or print your Codex access token.
+
+## Quick Start
+
+Print your current Codex status in a terminal:
+
+```sh
+npx codex-status-mcp --once
+```
+
+Add it to Claude Code:
+
+```sh
+claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp
+```
+
+Add it to Codex:
+
+```sh
+codex mcp add codex-status-mcp -- npx -y codex-status-mcp
+```
+
+After adding the MCP server, restart Claude Code or Codex. Most MCP clients load servers when a new
+session starts.
+
+Then ask your MCP client something like:
+
+```text
+What is my current Codex status?
+```
+
+## Requirements
+
+- Node.js 18 or newer.
+- Codex CLI installed and available on `PATH`.
+- Codex logged in with ChatGPT on the machine running the MCP server.
+
+Check Codex login status:
+
+```sh
+codex login status
+```
+
+If not logged in:
+
+```sh
+codex login
+```
+
+## CLI Usage
+
+Run once with `npx`:
+
+```sh
+npx codex-status-mcp --once
+```
+
+Example output:
+
+```json
+{
+  "source": "codex app-server account/rateLimits/read",
+  "account": {
+    "type": "chatgpt",
+    "email": "<redacted>",
+    "planType": "plus"
+  },
+  "requiresOpenaiAuth": true,
+  "rateLimits": {
+    "limitId": "codex",
+    "limitName": null,
+    "primary": {
+      "usedPercent": 10,
+      "windowDurationMins": 300,
+      "resetsAt": 1779752562,
+      "resetsAtIso": "2026-05-25T23:42:42.000Z"
+    },
+    "secondary": {
+      "usedPercent": 2,
+      "windowDurationMins": 10080,
+      "resetsAt": 1780339362,
+      "resetsAtIso": "2026-06-01T18:42:42.000Z"
+    },
+    "credits": {
+      "hasCredits": false,
+      "unlimited": false,
+      "balance": "0"
+    },
+    "planType": "plus",
+    "rateLimitReachedType": null
+  },
+  "rateLimitsByLimitId": {
+    "codex": {
+      "limitId": "codex",
+      "limitName": null,
+      "primary": {
+        "usedPercent": 10,
+        "windowDurationMins": 300,
+        "resetsAt": 1779752562,
+        "resetsAtIso": "2026-05-25T23:42:42.000Z"
+      },
+      "secondary": {
+        "usedPercent": 2,
+        "windowDurationMins": 10080,
+        "resetsAt": 1780339362,
+        "resetsAtIso": "2026-06-01T18:42:42.000Z"
+      },
+      "credits": {
+        "hasCredits": false,
+        "unlimited": false,
+        "balance": "0"
+      },
+      "planType": "plus",
+      "rateLimitReachedType": null
+    }
+  }
+}
+```
+
+Include the account email:
+
+```sh
+npx codex-status-mcp --once --include-email
+```
+
+Use a custom timeout:
+
+```sh
+npx codex-status-mcp --once --timeout-ms 30000
+```
+
+Show CLI help:
+
+```sh
+npx codex-status-mcp --help
+```
+
+## MCP Setup
+
+The MCP server exposes one tool:
+
+```text
+get_codex_status
+```
+
+It returns the same JSON as the CLI. The tool accepts two optional arguments:
+
+```json
+{
+  "timeoutMs": 15000,
+  "includeEmail": false
+}
+```
+
+### Claude Code
+
+Add the published package:
+
+```sh
+claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp
+```
+
+Verify:
+
+```sh
+claude mcp list
+claude mcp get codex-status-mcp
+```
+
+Equivalent MCP JSON:
+
+```json
+{
+  "mcpServers": {
+    "codex-status-mcp": {
+      "command": "npx",
+      "args": ["-y", "codex-status-mcp"]
+    }
+  }
+}
+```
+
+### Codex
+
+Add the published package:
+
+```sh
+codex mcp add codex-status-mcp -- npx -y codex-status-mcp
+```
+
+Verify:
+
+```sh
+codex mcp list
+codex mcp get codex-status-mcp --json
+```
+
+Codex writes this to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.codex-status-mcp]
+command = "npx"
+args = ["-y", "codex-status-mcp"]
+```
+
+### Other MCP Clients
+
+Use the same stdio server command:
+
+```json
+{
+  "mcpServers": {
+    "codex-status-mcp": {
+      "command": "npx",
+      "args": ["-y", "codex-status-mcp"]
+    }
+  }
+}
+```
+
+## How It Works
+
+`codex-status-mcp` is a thin wrapper around Codex's own local app-server.
+
+This package does not read local Codex session history or SQLite telemetry. Local files only reflect
+one installation, so they undercount usage across other devices and Codex surfaces.
+
+When you run the CLI smoke test or call the MCP tool, it starts:
+
+```sh
+codex app-server --listen stdio://
+```
+
+Then it speaks JSON-RPC over stdin/stdout:
+
+```text
+initialize
+account/read
+account/rateLimits/read
+```
+
+The quota data comes from Codex's app-server account API. Codex handles the existing ChatGPT login
+and refresh behavior internally. This package does not read or print your Codex access token.
+
+In CLI smoke-test mode, the command prints the result to stdout and exits. In MCP mode, the process
+stays alive because the MCP client manages it over stdio.
+
+## Local Checkout Setup
+
+Use these commands when working from a cloned copy of this repository before publishing to npm.
+
+Install and build:
+
+```sh
+npm install
+npm run build
+```
+
+Run the local CLI smoke test:
+
+```sh
+node dist/cli.js --once
+```
+
+Run the local MCP server:
+
+```sh
+node dist/cli.js
+```
+
+### Claude Code From Local Checkout
+
+Use the compiled entrypoint:
+
+```sh
+claude mcp add --scope user codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js
+```
+
+Or run TypeScript directly with `tsx`:
+
+```sh
+claude mcp add --scope user codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts
+```
+
+### Codex From Local Checkout
+
+Use the compiled entrypoint:
+
+```sh
+codex mcp add codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js
+```
+
+Or run TypeScript directly with `tsx`:
+
+```sh
+codex mcp add codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts
+```
+
+## Development
+
+Install dependencies:
+
+```sh
+npm install
+```
+
+Run from TypeScript:
+
+```sh
+npm run status
+```
+
+Run the MCP server from TypeScript:
+
+```sh
+npm run dev
+```
+
+Build:
+
+```sh
+npm run build
+```
+
+Typecheck:
+
+```sh
+npm run typecheck
+```
+
+Preview the npm package:
+
+```sh
+npm pack --dry-run
+```
+
+## Troubleshooting
+
+### Codex App-Server Cannot Start
+
+Make sure Codex CLI is installed and available on `PATH`:
+
+```sh
+codex --version
+```
+
+### Codex Is Not Logged In
+
+Make sure Codex is logged in with ChatGPT on this machine:
+
+```sh
+codex login status
+```
+
+If needed, log in:
+
+```sh
+codex login
+```
+
+### MCP Tool Does Not Show Up
+
+Restart Claude Code, Codex, or your MCP client after adding the server. Most MCP clients discover
+tools only when a new session starts.
+
+### MCP Tool Times Out
+
+Increase the timeout:
+
+```json
+{
+  "timeoutMs": 30000
+}
+```
+
+## Security Notes
+
+This package asks Codex's app-server for account status. Codex handles your ChatGPT auth internally.
+
+- Do not commit Codex auth files.
+- Do not paste tokens into shared logs.
+- Account email is redacted by default.
+- Use `includeEmail` only when you explicitly need the email in the result.
+- The package returns account and rate-limit metadata, not the token value.
+
+## License
+
+MIT
