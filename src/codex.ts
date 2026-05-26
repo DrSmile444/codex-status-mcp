@@ -151,7 +151,14 @@ export async function getCodexStatus(options: CodexStatusOptions = {}): Promise<
   const timeoutMs = parseTimeoutMs(options.timeoutMs);
 
   return await new Promise((resolve, reject) => {
-    const child = spawn("codex", ["app-server", "--listen", "stdio://"], {
+    // On Windows, npm CLI wrappers are .cmd batch files that require a shell to
+    // execute. Invoke cmd.exe directly to avoid both ENOENT and the shell:true
+    // deprecation warning about unsafe argument concatenation.
+    const [cmd, args] =
+      process.platform === "win32"
+        ? (["cmd.exe", ["/c", "codex", "app-server", "--listen", "stdio://"]] as const)
+        : (["codex", ["app-server", "--listen", "stdio://"]] as const);
+    const child = spawn(cmd, args, {
       stdio: ["pipe", "pipe", "pipe"],
     });
 
