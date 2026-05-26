@@ -1,4 +1,8 @@
+import { createRequire } from "node:module";
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+
+const _require = createRequire(import.meta.url);
+const { version } = _require("../package.json") as { version: string };
 
 export const DEFAULT_TIMEOUT_MS = 15_000;
 
@@ -269,7 +273,7 @@ export async function getCodexStatus(options: CodexStatusOptions = {}): Promise<
     });
 
     sendJson(child, 1, "initialize", {
-      clientInfo: { name: "codex-status-mcp", version: "0.1.0" },
+      clientInfo: { name: "codex-status-mcp", version },
       capabilities: { experimentalApi: true },
     });
     child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method: "initialized", params: {} })}\n`);
