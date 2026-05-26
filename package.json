@@ -1,8 +1,9 @@
 {
   "name": "codex-status-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for retrieving Codex ChatGPT usage and rate-limit status.",
   "type": "module",
+  "main": "dist/mcp.js",
   "bin": {
     "codex-status-mcp": "dist/cli.js"
   },
@@ -14,10 +15,10 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/cli.ts",
+    "dev": "tsx src/cli.ts --mcp",
     "prepack": "npm run build",
-    "start": "node dist/cli.js",
-    "status": "tsx src/cli.ts --once",
+    "start": "node dist/cli.js --mcp",
+    "status": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -27,7 +28,16 @@
     "usage",
     "rate-limit"
   ],
+  "author": "Dmytro Vakulenko",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrSmile444/codex-status-mcp.git"
+  },
+  "homepage": "https://github.com/DrSmile444/codex-status-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/DrSmile444/codex-status-mcp/issues"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -38,10 +48,5 @@
     "@types/node": "^22.15.19",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
-  },
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
-  "author": ""
+  }
 }
