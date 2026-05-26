@@ -11,7 +11,7 @@ rate-limit status, and returns the status JSON directly.
 
 Use it as:
 
-- a CLI smoke test: `npx codex-status-mcp --once`
+- a CLI smoke test: `npx codex-status-mcp`
 - a Claude Code MCP server
 - a Codex MCP server
 - a local MCP server while developing or testing
@@ -35,19 +35,19 @@ Use it as:
 Print your current Codex status in a terminal:
 
 ```sh
-npx codex-status-mcp --once
+npx codex-status-mcp
 ```
 
 Add it to Claude Code:
 
 ```sh
-claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp
+claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp --mcp
 ```
 
 Add it to Codex:
 
 ```sh
-codex mcp add codex-status-mcp -- npx -y codex-status-mcp
+codex mcp add codex-status-mcp -- npx -y codex-status-mcp --mcp
 ```
 
 After adding the MCP server, restart Claude Code or Codex. Most MCP clients load servers when a new
@@ -79,10 +79,10 @@ codex login
 
 ## CLI Usage
 
-Run once with `npx`:
+Print current status:
 
 ```sh
-npx codex-status-mcp --once
+npx codex-status-mcp
 ```
 
 Example output:
@@ -150,13 +150,13 @@ Example output:
 Include the account email:
 
 ```sh
-npx codex-status-mcp --once --include-email
+npx codex-status-mcp --include-email
 ```
 
 Use a custom timeout:
 
 ```sh
-npx codex-status-mcp --once --timeout-ms 30000
+npx codex-status-mcp --timeout-ms 30000
 ```
 
 Show CLI help:
@@ -187,7 +187,7 @@ It returns the same JSON as the CLI. The tool accepts two optional arguments:
 Add the published package:
 
 ```sh
-claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp
+claude mcp add --scope user codex-status-mcp -- npx -y codex-status-mcp --mcp
 ```
 
 Verify:
@@ -204,7 +204,7 @@ Equivalent MCP JSON:
   "mcpServers": {
     "codex-status-mcp": {
       "command": "npx",
-      "args": ["-y", "codex-status-mcp"]
+      "args": ["-y", "codex-status-mcp", "--mcp"]
     }
   }
 }
@@ -215,7 +215,7 @@ Equivalent MCP JSON:
 Add the published package:
 
 ```sh
-codex mcp add codex-status-mcp -- npx -y codex-status-mcp
+codex mcp add codex-status-mcp -- npx -y codex-status-mcp --mcp
 ```
 
 Verify:
@@ -230,7 +230,7 @@ Codex writes this to `~/.codex/config.toml`:
 ```toml
 [mcp_servers.codex-status-mcp]
 command = "npx"
-args = ["-y", "codex-status-mcp"]
+args = ["-y", "codex-status-mcp", "--mcp"]
 ```
 
 ### Other MCP Clients
@@ -242,7 +242,7 @@ Use the same stdio server command:
   "mcpServers": {
     "codex-status-mcp": {
       "command": "npx",
-      "args": ["-y", "codex-status-mcp"]
+      "args": ["-y", "codex-status-mcp", "--mcp"]
     }
   }
 }
@@ -272,8 +272,8 @@ account/rateLimits/read
 The quota data comes from Codex's app-server account API. Codex handles the existing ChatGPT login
 and refresh behavior internally. This package does not read or print your Codex access token.
 
-In CLI smoke-test mode, the command prints the result to stdout and exits. In MCP mode, the process
-stays alive because the MCP client manages it over stdio.
+By default, the command prints the result to stdout and exits. With `--mcp`, the process stays alive
+because the MCP client manages it over stdio.
 
 ## Local Checkout Setup
 
@@ -289,13 +289,13 @@ npm run build
 Run the local CLI smoke test:
 
 ```sh
-node dist/cli.js --once
+node dist/cli.js
 ```
 
 Run the local MCP server:
 
 ```sh
-node dist/cli.js
+node dist/cli.js --mcp
 ```
 
 ### Claude Code From Local Checkout
@@ -303,13 +303,13 @@ node dist/cli.js
 Use the compiled entrypoint:
 
 ```sh
-claude mcp add --scope user codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js
+claude mcp add --scope user codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js --mcp
 ```
 
 Or run TypeScript directly with `tsx`:
 
 ```sh
-claude mcp add --scope user codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts
+claude mcp add --scope user codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts --mcp
 ```
 
 ### Codex From Local Checkout
@@ -317,13 +317,13 @@ claude mcp add --scope user codex-status-mcp -- npx tsx /absolute/path/to/codex-
 Use the compiled entrypoint:
 
 ```sh
-codex mcp add codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js
+codex mcp add codex-status-mcp -- node /absolute/path/to/codex-status-mcp/dist/cli.js --mcp
 ```
 
 Or run TypeScript directly with `tsx`:
 
 ```sh
-codex mcp add codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts
+codex mcp add codex-status-mcp -- npx tsx /absolute/path/to/codex-status-mcp/src/cli.ts --mcp
 ```
 
 ## Development
@@ -334,7 +334,7 @@ Install dependencies:
 npm install
 ```
 
-Run from TypeScript:
+Print status from TypeScript:
 
 ```sh
 npm run status
