@@ -15,7 +15,7 @@ rate-limit status, and returns the status JSON directly.
 
 ## Demo
 
-<img src="docs/codex-usage-demo.png" alt="Codex usage shown as a table in an MCP client" width="540">
+<img src="https://raw.githubusercontent.com/DrSmile444/codex-status-mcp/main/docs/codex-usage-demo.png" alt="Codex usage shown as a table in an MCP client" width="540">
 
 ## Features
 
