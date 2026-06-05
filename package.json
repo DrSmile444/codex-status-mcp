@@ -1,13 +1,19 @@
 {
   "name": "codex-status-mcp",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "MCP server for retrieving Codex ChatGPT usage and rate-limit status.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./mcp": "./dist/mcp.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
+    }
   },
   "bin": {
     "codex-status-mcp": "dist/cli.js"
