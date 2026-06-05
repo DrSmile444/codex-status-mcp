@@ -52,7 +52,11 @@ jobs:
             exit 1
           fi
 
+      - name: Configure npm for Trusted Publishing
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm --version
+          node --version
+
       - name: Publish (with prepack build step)
         run: npm publish --access public --provenance
-        env:
-          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
