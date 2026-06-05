@@ -1,6 +1,6 @@
 {
   "name": "codex-status-mcp",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "MCP server for retrieving Codex ChatGPT usage and rate-limit status.",
   "type": "module",
   "main": "dist/index.js",
