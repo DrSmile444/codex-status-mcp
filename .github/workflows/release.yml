@@ -54,4 +54,4 @@ jobs:
           fi
 
       - name: Publish (with prepack build step)
-        run: npm publish --access public
+        run: npm publish --access public --provenance
