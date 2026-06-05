@@ -431,6 +431,14 @@ This package asks Codex's app-server for account status. Codex handles your Chat
 - Use `includeEmail` only when you explicitly need the email in the result.
 - The package returns account and rate-limit metadata, not the token value.
 
+## Related Packages
+
+These packages are part of the same family of AI provider status tools:
+
+- [claude-status-mcp](https://github.com/DrSmile444/claude-status-mcp) — Claude OAuth usage and rate-limit windows
+- [copilot-status-mcp](https://github.com/DrSmile444/copilot-status-mcp) — GitHub Copilot session, weekly, and monthly quota
+- [provider-status-mcp](https://github.com/DrSmile444/provider-status-mcp) — Aggregates Claude, Codex, and Copilot status into a single view
+
 ## License
 
 MIT
