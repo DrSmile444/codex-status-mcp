@@ -56,6 +56,37 @@ Then ask your MCP client something like:
 What is my current Codex status?
 ```
 
+## Programmatic Usage
+
+Install the package and import directly:
+
+```sh
+npm install codex-status-mcp
+```
+
+```typescript
+import { getCodexStatus } from "codex-status-mcp";
+
+const result = await getCodexStatus();
+console.log(result.rateLimits?.primary?.usedPercent); // e.g. 45
+```
+
+With options:
+
+```typescript
+import { getCodexStatus } from "codex-status-mcp";
+
+const result = await getCodexStatus({
+  timeoutMs: 30000,
+  includeEmail: true,
+});
+```
+
+The package exports:
+- `getCodexStatus(options?)` — fetch current Codex status; returns `CodexStatusResult`
+- `CodexStatusError` — thrown when the Codex app-server returns an error or times out
+- `DEFAULT_TIMEOUT_MS` — default timeout (15 000 ms)
+
 ## Requirements
 
 - Node.js 18 or newer.
