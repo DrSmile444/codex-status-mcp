@@ -26,6 +26,7 @@ jobs:
           node-version: 20
           cache: npm
           registry-url: https://registry.npmjs.org
+          token: ""
 
       - name: Install
         run: npm ci
@@ -55,5 +56,3 @@ jobs:
 
       - name: Publish (with prepack build step)
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ""
