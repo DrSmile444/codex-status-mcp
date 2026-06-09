@@ -21,6 +21,7 @@ rate-limit status, and returns the status JSON directly.
 
 - Uses Codex's own app-server account API instead of local session telemetry.
 - Respects usage from the ChatGPT account Codex is logged into, not just one local device.
+- `--pretty` flag for a human-readable terminal summary with progress bars.
 - Exposes a single MCP tool: `get_codex_status`.
 - Returns primary and secondary Codex rate-limit windows with usage percentage and reset time.
 - Returns Codex credits status and whether a rate limit has been reached.
@@ -33,6 +34,12 @@ Print your current Codex status in a terminal:
 
 ```sh
 npx codex-status-mcp
+```
+
+Pretty-print for humans:
+
+```sh
+npx codex-status-mcp --pretty
 ```
 
 Add it to Claude Code:
@@ -191,6 +198,43 @@ Show CLI help:
 
 ```sh
 npx codex-status-mcp --help
+```
+
+### Pretty output
+
+```sh
+npx codex-status-mcp --pretty
+```
+
+```
+Codex Status
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Account
+  Plan:   plus
+  Email:  <redacted>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Rate Limits
+
+  Primary (5h window)
+    [██████████░░░░░░░░░░] 49% used, 51% remaining
+    Resets in: 4h 46m
+
+  Secondary (7d window)
+    [█████░░░░░░░░░░░░░░░] 23% used, 77% remaining
+    Resets in: 156h 22m
+```
+
+### All flags
+
+```sh
+npx codex-status-mcp [options]
+
+Options:
+  --pretty               Human-readable summary with progress bars instead of JSON.
+  --include-email        Include account email in output.
+  --timeout-ms <ms>      Timeout for API requests (default: 15000).
+  --mcp                  Run as an MCP stdio server.
+  --help, -h             Show help.
 ```
 
 ## MCP Setup
